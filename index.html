@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Page Pulse - URL Auditor</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+    input { width: 70%; padding: 10px; font-size: 16px; }
+    button { padding: 10px 15px; font-size: 16px; cursor: pointer; }
+    .card { background: #f4f4f4; padding: 15px; border-radius: 8px; margin-top: 20px; }
+    footer { margin-top: 40px; font-size: 14px; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <h2>Page Pulse - Audit Tool</h2>
+  <div>
+    <input type="text" id="urlInput" placeholder="https://example.com" />
+    <button onclick="runAudit()">Audit</button>
+  </div>
+
+  <div id="result" class="card" style="display: none;"></div>
+
+  <footer>
+    <p><a href="https://digitalheroesco.com" target="_blank">Built for Digital Heroes Training Task</a></p>
+  </footer>
+
+  <script>
+    async function runAudit() {
+      const url = document.getElementById("urlInput").value;
+      const resultDiv = document.getElementById("result");
+      resultDiv.style.display = "block";
+      resultDiv.innerHTML = "Auditing, please wait...";
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/audit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: url })
+        });
+        
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "An error occurred");
+
+        resultDiv.innerHTML = `
+          <h3>Audit Report</h3>
+          <p><strong>HTTP Status:</strong> ${data.status_code}</p>
+          <p><strong>Response Time:</strong> ${data.response_time_ms} ms</p>
+          <p><strong>Page Title:</strong> ${data.title}</p>
+          <p><strong>Meta Description:</strong> ${data.meta_description}</p>
+          <p><strong>H1 Count:</strong> ${data.h1_count}</p>
+          <p><strong>Images Missing Alt Text:</strong> ${data.missing_alt_images}</p>
+          <p><strong>Word Count:</strong> ~${data.word_count} words</p>
+        `;
+      } catch (err) {
+        resultDiv.innerHTML = `<p style="color:red;"><strong>Error:</strong> ${err.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
