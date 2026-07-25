@@ -33,8 +33,8 @@
       resultDiv.innerHTML = "Auditing, please wait...";
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/audit", {
-          method: "POST",
+    const response = await fetch("https://page-pulse-backend.onrender.com/api/audit", {
+      method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url: url })
         });
